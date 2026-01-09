@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>  
+    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0    ">
+</head>
+<body>
+    <h1>Student Dashboard</h1>
+    <p>name:{{student.name }}</p>
+    <p>Age :{{student.age}}</p>
+    <p>Gender:{{student.gender}}</p>
+    <p>Marks:{{marks}}</p>
+    {% if marks > 60 %}
+    <p>Grade: A</p>
+    {% else %}
+    <p>Grade :B</p>
+    {% endif %}
+    <br>
+    <h3>Subjects Enrolled:</h3>
+    {% for subject in subjects %}
+    <ul>
+    <li>{{subject}}</li>
+    </ul>
+    {% endfor %}
+
+</body>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        padding: 20px;
+    }
+    h1 {
+        color: #333;
+        text-align: center;
+    }
+    p {
+        margin: 5px 0;
+    }
+</style>
+</html>
