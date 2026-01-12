@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2>Teachers</h2>
+<a href="{% url 'create-teacher' %}" class="btn btn-primary mb-2">Add Teacher</a>
+<table class="table table-bordered">
+  <thead><tr><th>Username</th><th>Email</th><th>Salary</th><th>Action</th></tr></thead>
+  <tbody>
+    {% for t in teachers %}
+    <tr>
+      <td>{{ t.username }}</td>
+      <td>{{ t.email }}</td>
+      <td>{{ t.salary }}</td>
+      <td><a href="{% url 'delete-teacher' t.id %}" class="btn btn-danger btn-sm">Delete</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Students</h2>
+<a href="{% url 'create-student' %}" class="btn btn-primary mb-2">Add Student</a>
+<table class="table table-bordered">
+  <thead><tr><th>Username</th><th>Email</th><th>Fees</th><th>Action</th></tr></thead>
+  <tbody>
+    {% for s in students %}
+    <tr>
+      <td>{{ s.username }}</td>
+      <td>{{ s.email }}</td>
+      <td>{{ s.fees }}</td>
+      <td><a href="{% url 'delete-student' s.id %}" class="btn btn-danger btn-sm">Delete</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

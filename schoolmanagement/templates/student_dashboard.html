@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h2>Marks</h2>
+{% for sem, subjects in marks.items %}
+  <h4>{{ sem }}</h4>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Subject</th>
+        {# Use first subject's assessments for header #}
+        {% for subject, assessments in subjects.items %}
+          {% if forloop.first %}
+            {% for assessment, score in assessments.items %}
+              <th>{{ assessment }}</th>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for subject, assessments in subjects.items %}
+      <tr>
+        <td>{{ subject }}</td>
+        {% for a_name, score in assessments.items %}
+          <td>{{ score }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% empty %}
+  <p>No marks available yet.</p>
+{% endfor %}
+
+<h2>Attendance</h2>
+{% for sem, subjects in attendance.items %}
+  <h4>{{ sem }}</h4>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Present</th>
+        <th>Total</th>
+        <th>Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for subject, data in subjects.items %}
+      <tr>
+        <td>{{ subject }}</td>
+        <td>{{ data.present }}</td>
+        <td>{{ data.total }}</td>
+        <td>{{ data.percentage }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% empty %}
+  <p>No attendance records yet.</p>
+{% endfor %}
+{% endblock %}

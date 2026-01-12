@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+
+    <!-- ================== ASSIGN MARKS ================== -->
+    <h2 class="mb-3">Assign Marks</h2>
+    <form method="POST" id="marksForm" class="mb-5">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Student</label>
+            <select name="student" class="form-select" required>
+                {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Assignment</label>
+            <select name="assignment" class="form-select" required>
+                {% for assign in assignments %}
+                    <option value="{{ assign.id }}">{{ assign.subject.name }} - {{ assign.semester }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Assessment</label>
+            <select name="assessment" class="form-select" required>
+                {% for assessment in assessments %}
+                    <option value="{{ assessment.id }}">{{ assessment.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Marks</label>
+            <input type="number" name="marks" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+
+    <h3 class="mb-3">Mark List</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="marksTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th>Assessment</th>
+                    <th>Marks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mark in marks %}
+                <tr data-id="{{ mark.id }}">
+                    <td>{{ mark.student.user.username }}</td>
+                    <td>{{ mark.assignment.subject.name }}</td>
+                    <td>{{ mark.assessment.name }}</td>
+                    <td>{{ mark.marks }}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger deleteMark" data-id="{{ mark.id }}">Delete</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No marks assigned yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr class="my-5">
+
+    <!-- ================== ATTENDANCE ================== -->
+    <h2 class="mb-3">Mark Attendance</h2>
+    <form method="POST" id="attendanceForm" class="mb-5">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Student</label>
+            <select name="student" class="form-select" required>
+                {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Assignment</label>
+            <select name="assignment" class="form-select" required>
+                {% for assign in assignments %}
+                    <option value="{{ assign.id }}">{{ assign.subject.name }} - {{ assign.semester }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" name="date" class="form-control" required>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" name="present" id="present" checked>
+            <label class="form-check-label" for="present">Present</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Mark Attendance</button>
+    </form>
+
+    <h3 class="mb-3">Attendance List</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="attendanceTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for att in attendance %}
+                <tr>
+                    <td>{{ att.student.user.username }}</td>
+                    <td>{{ att.assignment.subject.name }}</td>
+                    <td>{{ att.date }}</td>
+                    <td>
+                        {% if att.present %}
+                            Present
+                        {% else %}
+                            Absent
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No attendance marked yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // ====== DELETE MARK ======
+    document.getElementById("marksTable").addEventListener("click", function(e){
+        if(e.target.classList.contains("deleteMark")){
+            const id = e.target.dataset.id;
+            if(confirm("Delete this mark?")){
+                alert("Delete endpoint not connected yet (ID: " + id + ")");
+            }
+        }
+    });
+</script>
+{% endblock %}
