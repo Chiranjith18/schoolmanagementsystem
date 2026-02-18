@@ -12,6 +12,8 @@ from .models import *
 from .serializers import *
 from drf_spectacular.utils import extend_schema
 from django.contrib.auth.decorators import login_required
+from rest_framework.response import Response
+from rest_framework import status
 
 # ✅ FIXED #1: PROPER BulkCreateMixin that handles ForeignKeys
 class BulkCreateMixin:
@@ -42,29 +44,28 @@ class BulkCreateMixin:
                           status=status.HTTP_201_CREATED)
         return super().create(request, *args, **kwargs)
 
-# ✅ FIXED #2: ViewSets now work with proper ForeignKey handling
-@extend_schema(tags=["Admin/semesters"])
+#
 class SemesterViewSet(BulkCreateMixin, viewsets.ModelViewSet):
     queryset = Semester.objects.all()
     serializer_class = SemesterSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdmin]
 
-@extend_schema(tags=["Admin/subjects"])
+
 class SubjectViewSet(BulkCreateMixin, viewsets.ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdmin]
 
-@extend_schema(tags=["Admin/assessments"])
+
 class AssessmentTypeViewSet(BulkCreateMixin, viewsets.ModelViewSet):
     queryset = AssessmentType.objects.all()
     serializer_class = AssessmentTypeSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdmin]
 
-@extend_schema(tags=["Admin/assignments"])
+
 class TeacherAssignmentViewSet(BulkCreateMixin, viewsets.ModelViewSet):
     queryset = TeacherAssignment.objects.all()
     serializer_class = TeacherAssignmentSerializer
@@ -72,7 +73,7 @@ class TeacherAssignmentViewSet(BulkCreateMixin, viewsets.ModelViewSet):
     permission_classes = [IsAdmin]
 
 # ✅ FIXED #3: AssignMarksView - Proper ID handling
-@extend_schema(tags=["Teacher/marks"])
+
 class AssignMarksView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsTeacher]
@@ -110,7 +111,7 @@ class AssignMarksView(APIView):
 
 # ✅ REST OF VIEWS (UNCHANGED - WORKING FINE)
 
-@extend_schema(tags=["Students"])
+
 class MyMarksView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsStudent]
@@ -132,7 +133,7 @@ class MyMarksView(APIView):
 
         return Response(result)
 
-@extend_schema(tags=["Students"])
+
 class MyAttendanceView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsStudent]
@@ -162,15 +163,19 @@ class MyAttendanceView(APIView):
 
         return Response(result)
 
-# Teacher ViewSets (minor security fixes)
-@extend_schema(tags=["Teacher/marks"])
+
+
+
+
 class TeacherMarksViewSet(viewsets.ModelViewSet):
     serializer_class = AssignMarksSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsTeacher]
 
     def get_queryset(self):
-        return StudentMarks.objects.filter(assignment__teacher=self.request.user)
+        return StudentMarks.objects.filter(
+            assignment__teacher=self.request.user
+        )
 
     def perform_create(self, serializer):
         assignment = serializer.validated_data['assignment']
@@ -178,7 +183,23 @@ class TeacherMarksViewSet(viewsets.ModelViewSet):
             raise PermissionError("Not assigned to this subject")
         serializer.save()
 
-@extend_schema(tags=["Teacher/attendance"])
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_queryset().get(pk=kwargs["pk"])
+        except StudentMarks.DoesNotExist:
+            return Response(
+                {"error": "Mark not found or not owned by teacher"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        self.perform_destroy(instance)
+        return Response(
+            {"status": "deleted"},
+            status=status.HTTP_204_NO_CONTENT
+        )
+
+
+
 class TeacherAttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = AttendanceSerializer
     authentication_classes = [JWTAuthentication]
