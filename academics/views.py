@@ -14,6 +14,7 @@ from drf_spectacular.utils import extend_schema
 from django.contrib.auth.decorators import login_required
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
 
 # ✅ FIXED #1: PROPER BulkCreateMixin that handles ForeignKeys
 class BulkCreateMixin:
@@ -167,9 +168,11 @@ class MyAttendanceView(APIView):
 
 
 
+
+
 class TeacherMarksViewSet(viewsets.ModelViewSet):
     serializer_class = AssignMarksSerializer
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsTeacher]
 
     def get_queryset(self):
@@ -177,26 +180,6 @@ class TeacherMarksViewSet(viewsets.ModelViewSet):
             assignment__teacher=self.request.user
         )
 
-    def perform_create(self, serializer):
-        assignment = serializer.validated_data['assignment']
-        if assignment.teacher != self.request.user:
-            raise PermissionError("Not assigned to this subject")
-        serializer.save()
-
-    def destroy(self, request, *args, **kwargs):
-        try:
-            instance = self.get_queryset().get(pk=kwargs["pk"])
-        except StudentMarks.DoesNotExist:
-            return Response(
-                {"error": "Mark not found or not owned by teacher"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        self.perform_destroy(instance)
-        return Response(
-            {"status": "deleted"},
-            status=status.HTTP_204_NO_CONTENT
-        )
 
 
 
