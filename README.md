@@ -3,14 +3,28 @@
 ## Getting Started
 
 ```bash
-git clone https://github.com/Chiranjith18/schoolmanagementsystem.git
+git clone https://github.com/your-username/your-repo-name.git
 cd your-repo-name
 pip install -r requirements.txt
+```
+
+Create a `.env` file in the root directory with the following:
+
+```env
+SECRET_KEY=your-secret-key
+DEBUG=1
+DATABASE_URL=postgres://user:password@host:5432/dbname
+```
+
+> **Note:** `DATABASE_URL` is required — the app will not start without it. Use a PostgreSQL connection string (e.g. from Supabase, Railway, or a local Postgres instance).
+
+```bash
 python manage.py migrate
+python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Then open `http://localhost:8000` in your browser.
+Then open `http://localhost:8000` in your browser and `http://localhost:8000/admin` for the admin panel.
 
 ---
 
