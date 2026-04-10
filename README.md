@@ -2,29 +2,29 @@
 
 ## Getting Started
 
-```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
-pip install -r requirements.txt
-```
+1. **Clone and Install Dependencies:**
+   ```bash
+   git clone https://github.com/your-username/your-repo-name.git
+   cd your-repo-name
+   pip install -r requirements.txt
+   ```
 
-Create a `.env` file in the root directory with the following:
+2. **Setup Environment (Optional):**
+   Create a `.env` file in the root directory if you want to use an external database or debug mode:
+   ```env
+   SECRET_KEY=your-secret-key
+   DEBUG=1
+   # DATABASE_URL=postgres://user:password@host:5432/dbname (Optional: defaults to SQLite)
+   ```
 
-```env
-SECRET_KEY=your-secret-key
-DEBUG=1
-DATABASE_URL=postgres://user:password@host:5432/dbname
-```
+3. **Initialize Database and Start:**
+   ```bash
+   python manage.py migrate
+   python manage.py createsuperuser
+   python manage.py runserver
+   ```
 
-> **Note:** `DATABASE_URL` is required — the app will not start without it. Use a PostgreSQL connection string (e.g. from Supabase, Railway, or a local Postgres instance).
-
-```bash
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
-```
-
-Then open `http://localhost:8000` in your browser and `http://localhost:8000/admin` for the admin panel.
+Then open `http://localhost:8000` in your browser.
 
 ---
 
